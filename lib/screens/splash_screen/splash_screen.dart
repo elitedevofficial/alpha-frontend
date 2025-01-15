@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen>
                       children: [
                         const CircleAvatar(
                           radius: 60,
-                          backgroundImage: AssetImage('assets/logo.png'),
+                          backgroundImage: AssetImage('assets/images/logo.png'),
                         ),
                         SizedBox(
                           width: 125,
