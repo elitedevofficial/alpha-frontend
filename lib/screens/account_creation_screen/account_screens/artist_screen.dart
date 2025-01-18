@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
-import 'package:myapp/providers/language_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/artists_data.dart';
 import 'package:myapp/widgets/commonwidget/acount_creation_button.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
@@ -20,12 +20,11 @@ class ArtistScreen extends StatefulWidget {
 
 class _ArtistScreenState extends State<ArtistScreen> {
   late String selectedLanguage;
-  final Set<String> selectedArtists = {};
 
   @override
   void initState() {
     super.initState();
-    final languages = context.read<LanguageProvider>().selectedLanguages;
+    final languages = context.read<UserDataProvider>().selectedLanguages;
     selectedLanguage = languages.isNotEmpty ? languages[0] : "Language";
   }
 
@@ -37,8 +36,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
   }
 
   void showLanguagePopup() {
-    final selectedLanguages =
-        context.read<LanguageProvider>().selectedLanguages;
+    final selectedLanguages = context.read<UserDataProvider>().selectedLanguages;
 
     showDialog(
       context: context,
@@ -87,17 +85,9 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 
-  void toggleArtistSelection(String artistName) {
-    setState(() {
-      if (selectedArtists.contains(artistName)) {
-        selectedArtists.remove(artistName); // Deselect artist
-      } else if (selectedArtists.length < 10) {
-        selectedArtists.add(artistName);
-      }
-    });
-  }
-
   void handleContinue() {
+    final selectedArtists = context.read<UserDataProvider>().selectedArtists;
+
     if (selectedArtists.length < 3) {
       SlidingSnackbar(
         context: context,
@@ -105,7 +95,8 @@ class _ArtistScreenState extends State<ArtistScreen> {
         isSuccess: false,
       ).show();
     } else {
-      print("Selected Artists: ${selectedArtists.toList()}");
+      final userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
+      userDataProvider.printUserData();
       SlidingSnackbar(
         context: context,
         message: "Account Created Successfully",
@@ -184,9 +175,14 @@ class _ArtistScreenState extends State<ArtistScreen> {
                     itemBuilder: (context, index) {
                       final artist = artists[index];
                       final artistName = artist["name"]!;
-                      final isSelected = selectedArtists.contains(artistName);
+                      final isSelected = context
+                          .watch<UserDataProvider>()
+                          .selectedArtists
+                          .contains(artistName);
                       return GestureDetector(
-                        onTap: () => toggleArtistSelection(artistName),
+                        onTap: () => context
+                            .read<UserDataProvider>()
+                            .toggleArtistSelection(artistName),
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: isSelected
@@ -258,3 +254,4 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 }
+

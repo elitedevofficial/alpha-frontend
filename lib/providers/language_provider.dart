@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LanguageProvider with ChangeNotifier {
-  List<String> _selectedLanguages = [];
+  final List<String> _selectedLanguages = [];
 
   List<String> get selectedLanguages => _selectedLanguages;
 

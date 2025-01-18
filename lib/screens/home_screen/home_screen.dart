@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -25,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _showAboutContent = true; // Show the "About" content
                 });
               },
-              child: Text('Go to About Content'),
+              child: const Text('Go to About Content'),
             ),
           );
   }
@@ -36,21 +38,21 @@ class _HomeScreenState extends State<HomeScreen> {
 class AboutContent extends StatelessWidget {
   final VoidCallback onBack;
 
-  AboutContent({required this.onBack});
+  const AboutContent({super.key, required this.onBack});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
+        const Text(
           'About Content',
           style: TextStyle(fontSize: 24),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: onBack, // Go back to Home content
-          child: Text('Back to Home'),
+          child: const Text('Back to Home'),
         ),
       ],
     );

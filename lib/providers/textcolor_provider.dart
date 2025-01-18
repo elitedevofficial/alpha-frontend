@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ColorProvider with ChangeNotifier {
   // Updated default colors
   Color _headingColor = Colors.white; // White for heading color
-  Color _subHeadingColor = Color(0xFFF5F5F5); // Light white (off-white) for subheading color
+  Color _subHeadingColor = const Color(0xFFF5F5F5); // Light white (off-white) for subheading color
 
   Color get headingColor => _headingColor;
   Color get subHeadingColor => _subHeadingColor;
@@ -33,14 +33,14 @@ class ColorProvider with ChangeNotifier {
   Future<void> loadColors() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _headingColor = Color(prefs.getInt('headingColor') ?? Colors.white.value); // Default to white
-    _subHeadingColor = Color(prefs.getInt('subHeadingColor') ?? Color(0xFFF5F5F5).value); // Default to light white
+    _subHeadingColor = Color(prefs.getInt('subHeadingColor') ?? const Color(0xFFF5F5F5).value); // Default to light white
     notifyListeners();
   }
 
   // Reset to default colors (white and light white)
   void resetToDefault() {
     _headingColor = Colors.white;
-    _subHeadingColor = Color(0xFFF5F5F5);
+    _subHeadingColor = const Color(0xFFF5F5F5);
     _saveColors();
     notifyListeners();
   }

@@ -53,7 +53,7 @@ LinearGradient buttonBorderGardient = LinearGradient(
 LinearGradient activeContainerGardient = LinearGradient(
     colors: [
       const Color(0xFF2737CF).withOpacity(0.4),
-      Color(0xFF6562FB).withOpacity(0.70)
+      const Color(0xFF6562FB).withOpacity(0.70)
     ],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,

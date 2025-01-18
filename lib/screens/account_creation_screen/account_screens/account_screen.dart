@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/widgets/commonwidget/acount_creation_button.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/custom_snakbar.dart';
@@ -40,9 +41,11 @@ class _AccountScreenState extends State<AccountScreen> {
       );
       return;
     }
-    print("Username: ${_usernameController.text}");
-    print("Terms Accepted: $_isTermsAccepted");
-    print("Privacy Accepted: $_isPrivacyAccepted");
+
+    // Store the username in the provider
+    final userDataProvider =
+        Provider.of<UserDataProvider>(context, listen: false);
+    userDataProvider.setUsername(_usernameController.text); // Update username
     widget.onContinue();
   }
 
@@ -67,7 +70,7 @@ class _AccountScreenState extends State<AccountScreen> {
         const SizedBox(
           height: 20,
         ),
-       const ConditionWidget(),
+        const ConditionWidget(),
         const SizedBox(
           height: 15,
         ),
@@ -110,7 +113,6 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ],
         ),
-
         const SizedBox(
           height: 15,
         ),
@@ -153,7 +155,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ],
         ),
-       const Spacer(),
+        const Spacer(),
         Padding(
           padding: const EdgeInsets.only(bottom: 15),
           child: AccountCreationButton(
@@ -215,8 +217,8 @@ class UsernameWidget extends StatelessWidget {
                     fontFamily: 'LexendDeca',
                   ),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   suffixIcon: const Icon(
                     Broken.message_edit,
                     color: Colors.white,

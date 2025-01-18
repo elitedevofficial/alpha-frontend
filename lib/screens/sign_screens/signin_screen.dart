@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import '../../widgets/commonwidget/gradientBorder.dart';
 
 class SigninScreen extends StatelessWidget {
+  const SigninScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final gradientColors = Provider.of<GradientProvider>(context).colors;

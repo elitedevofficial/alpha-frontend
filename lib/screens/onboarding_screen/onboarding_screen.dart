@@ -182,6 +182,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
+                                  
                                   SizedBox(width: 8),
                                   Icon(
                                     Broken.arrow_right_3,
