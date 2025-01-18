@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/language_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/widgets/commonwidget/acount_creation_button.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/custom_snakbar.dart';
@@ -30,7 +31,14 @@ class LanguageScreen extends StatelessWidget {
         isSuccess: false,
       ).show();
     } else {
+      // Update UserDataProvider with selected languages
+      var userDataProvider = context.read<UserDataProvider>();
+      userDataProvider.setSelectedLanguages(selectedLanguages);
+
+      // Print the selected languages for confirmation
       print("Selected Languages: ${selectedLanguages.join(', ')}");
+
+      // Proceed with the continuation
       onContinue();
     }
   }

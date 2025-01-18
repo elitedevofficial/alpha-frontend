@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/widgets/commonwidget/acount_creation_button.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/custom_snakbar.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
- 
+
 class GenderSelectorScreen extends StatefulWidget {
   final VoidCallback onContinue;
 
@@ -20,7 +21,6 @@ class _GenderSelectorScreenState extends State<GenderSelectorScreen> {
   String? selectedGender;
 
   final LinearGradient activeGradient = activeContainerGardient;
-
   final LinearGradient inactiveGradient = containerGardient;
 
   Widget genderButton(String label, String value) {
@@ -30,6 +30,8 @@ class _GenderSelectorScreenState extends State<GenderSelectorScreen> {
       onTap: () {
         setState(() {
           selectedGender = value;
+          final userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
+          userDataProvider.setGender(selectedGender); 
         });
       },
       child: Container(
@@ -61,7 +63,6 @@ class _GenderSelectorScreenState extends State<GenderSelectorScreen> {
         isSuccess: false,
       );
     } else {
-      print("Selected Gender: $selectedGender");
       widget.onContinue();
     }
   }

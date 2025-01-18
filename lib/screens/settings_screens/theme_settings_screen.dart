@@ -4,6 +4,8 @@ import 'package:myapp/providers/gradient_provider.dart';
 import 'package:provider/provider.dart';
 
 class ThemeSettingsScreen extends StatefulWidget {
+  const ThemeSettingsScreen({super.key});
+
   @override
   _ThemeSettingsScreenState createState() => _ThemeSettingsScreenState();
 }
@@ -38,7 +40,7 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
           ),
           actions: [
             TextButton(
-              child: Text('Done'),
+              child: const Text('Done'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -68,7 +70,7 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Change Gradient Colors')),
+      appBar: AppBar(title: const Text('Change Gradient Colors')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -80,20 +82,20 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
                 trailing: CircleAvatar(backgroundColor: selectedColors[i]),
                 onTap: () => pickColor(i),
               ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Save button
             ElevatedButton(
               onPressed: saveColors,
-              child: Text('Save Colors'),
+              child: const Text('Save Colors'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Reset button
             ElevatedButton(
               onPressed: resetToDefaultColors,
-              child: Text('Reset to Default'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red, // Optional: Change the button color
               ),
+              child: Text('Reset to Default'),
             ),
           ],
         ),

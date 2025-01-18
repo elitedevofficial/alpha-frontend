@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/custom_snakbar.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
@@ -18,17 +19,17 @@ class AgeSelectorScreen extends StatefulWidget {
 
 class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
   int selectedDay = 1;
-  int selectedMonth = 1; 
+  int selectedMonth = 1;
   int selectedYear = 2018;
 
   final List<int> days = List.generate(31, (index) => index + 1);
   final List<String> months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January', 'February', 'March', 'April', 'May', 'June', 'July', 
+    'August', 'September', 'October', 'November', 'December'
   ];
   final List<int> years = List.generate(100, (index) => 2023 - index);
 
-  String? errorMessage; 
+  String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +98,6 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
                     ),
                   ],
                 ),
-                
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.only(left: 5, right: 5),
@@ -115,7 +115,7 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
                         ),
                         child: TextButton(
                           onPressed: () {
-                            _validateAndProceed(); 
+                            _validateAndProceed();
                           },
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
@@ -135,7 +135,7 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
                               ),
                               SizedBox(width: 8),
                               Icon(
-                               Broken.arrow_right_2,
+                                Broken.arrow_right_2,
                                 color: Colors.white,
                                 size: 20,
                               ),
@@ -154,7 +154,6 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
     );
   }
 
-
   Widget _buildPicker({
     required BuildContext context,
     required List<String> items,
@@ -172,8 +171,8 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
         selectionOverlay: Container(
           decoration: BoxDecoration(
             border: Border.symmetric(
-              horizontal: BorderSide(
-                  color: Colors.white.withOpacity(0.5), width: 1),
+              horizontal:
+                  BorderSide(color: Colors.white.withOpacity(0.5), width: 1),
             ),
           ),
         ),
@@ -196,51 +195,53 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
     );
   }
 
-
   void _validateAndProceed() {
-  final selectedDate = DateTime(selectedYear, selectedMonth + 1, selectedDay);
-  final currentDate = DateTime.now();
-  final age = currentDate.year -
-      selectedDate.year -
-      ((currentDate.month < selectedDate.month ||
-              (currentDate.month == selectedDate.month &&
-                  currentDate.day < selectedDate.day))
-          ? 1
-          : 0);
+    final selectedDate = DateTime(selectedYear, selectedMonth + 1, selectedDay);
+    final currentDate = DateTime.now();
+    final age = currentDate.year - selectedDate.year - 
+        ((currentDate.month < selectedDate.month ||
+                (currentDate.month == selectedDate.month &&
+                    currentDate.day < selectedDate.day))
+            ? 1
+            : 0);
 
-  if (age < 10) {
-    setState(() {
-      errorMessage = null; 
-    });
-    _showSnackbar(
-      context: context,
-      message: "You must be at least 10 years old to continue.",
-      isSuccess: false,
-    );
-  } else {
-    setState(() {
-      errorMessage = null; 
-    });
-    _showSnackbar(
-      context: context,
-      message: "Age validated successfully!",
-      isSuccess: true,
-    );
-    print('Age: $age');
-    widget.onContinue();
+    if (age < 10) {
+      setState(() {
+        errorMessage = null;
+      });
+      _showSnackbar(
+        context: context,
+        message: "You must be at least 10 years old to continue.",
+        isSuccess: false,
+      );
+    } else {
+      setState(() {
+        errorMessage = null;
+      });
+      _showSnackbar(
+        context: context,
+        message: "Age validated successfully!",
+        isSuccess: true,
+      );
+
+      // Access UserDataProvider and update both age and birthdate
+      var userDataProvider =
+          Provider.of<UserDataProvider>(context, listen: false);
+      userDataProvider.setAge(age); // Set the age in the provider
+      userDataProvider.setBirthdate(selectedDate); // Set the birthdate in the provider
+      widget.onContinue();
+    }
   }
-}
 
-void _showSnackbar({
-  required BuildContext context,
-  required String message,
-  required bool isSuccess,
-}) {
-  SlidingSnackbar(
-    context: context,
-    message: message,
-    isSuccess: isSuccess,
-  ).show();
-}
-
+  void _showSnackbar({
+    required BuildContext context,
+    required String message,
+    required bool isSuccess,
+  }) {
+    SlidingSnackbar(
+      context: context,
+      message: message,
+      isSuccess: isSuccess,
+    ).show();
+  }
 }

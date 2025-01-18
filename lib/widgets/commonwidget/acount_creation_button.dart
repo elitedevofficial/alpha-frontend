@@ -17,8 +17,8 @@ class AccountCreationButton extends StatelessWidget {
     this.icon,
     this.height = 44,
     this.borderRadius = 10,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

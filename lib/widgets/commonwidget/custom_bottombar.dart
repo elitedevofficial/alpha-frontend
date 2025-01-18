@@ -4,14 +4,14 @@ class CustomBottomBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  CustomBottomBar({required this.currentIndex, required this.onTap});
+  const CustomBottomBar({super.key, required this.currentIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
-      items: [
+      items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home,color: Colors.blue,), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.search,color: Colors.blue,), label: 'Search'),
         BottomNavigationBarItem(icon: Icon(Icons.library_music,color: Colors.blue,), label: 'Library'),

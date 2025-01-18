@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/userdata_provider.dart'; // Import the provider
 import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/language_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
@@ -9,9 +10,11 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        // Register UserDataProvider along with other providers
+        ChangeNotifierProvider(create: (_) => UserDataProvider()), // Added UserDataProvider here
         ChangeNotifierProvider(create: (_) => GradientProvider()),
         ChangeNotifierProvider(create: (_) => ColorProvider()..loadColors()),
-        ChangeNotifierProvider(create: (_) => LanguageProvider())
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
       child: MyApp(),
     ),
@@ -19,6 +22,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,8 +32,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'LexendDeca',
       ),
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
-

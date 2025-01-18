@@ -3,8 +3,6 @@ description: "A new Flutter project."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-
-
 version: 1.0.0+1
 
 environment:
@@ -19,18 +17,14 @@ dependencies:
   shared_preferences: ^2.3.3
   flutter_colorpicker: ^1.1.0
   smooth_page_indicator: ^1.2.0+3
-  flutter_launcher_icons: ^0.14.2
+  http: ^1.2.2
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
-
-
-flutter_icons:
-  android: true
-  ios: true
-  image_path: "assets/images/logo.png"
+  flutter_launcher_icons: "^0.14.3"
 
 flutter:
   uses-material-design: true
@@ -60,3 +54,8 @@ flutter:
         - asset: assets/fonts/LexendDeca/LexendDeca-Regular.ttf
         - asset: assets/fonts/LexendDeca/LexendDeca-SemiBold.ttf
         - asset: assets/fonts/LexendDeca/LexendDeca-Thin.ttf
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/logo.png"        

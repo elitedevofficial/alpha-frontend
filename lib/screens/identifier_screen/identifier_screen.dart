@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class IdentifyScreen extends StatelessWidget {
+  const IdentifyScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Identify Screen'));
+    return const Center(child: Text('Identify Screen'));
   }
 }

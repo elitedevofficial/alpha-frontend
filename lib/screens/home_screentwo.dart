@@ -3,6 +3,8 @@ import 'package:myapp/providers/gradient_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreentwo extends StatelessWidget {
+  const HomeScreentwo({super.key});
+
   @override
   Widget build(BuildContext context) {
     final gradientColors = Provider.of<GradientProvider>(context).colors;
@@ -30,12 +32,12 @@ class HomeScreentwo extends StatelessWidget {
         child: Column(
           children: [
             IconButton(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, '/settings');
             },
           ),
-            Center(
+            const Center(
               child: Text(
                 'Home Screen',
                 style: TextStyle(color: Colors.white, fontSize: 24),

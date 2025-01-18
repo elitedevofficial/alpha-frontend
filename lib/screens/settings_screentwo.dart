@@ -7,6 +7,8 @@ import 'package:myapp/screens/settings_screens/theme_settings_screen.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreentwo extends StatelessWidget {
+  const SettingsScreentwo({super.key});
+
   @override
   Widget build(BuildContext context) {
     final gradientColors = Provider.of<GradientProvider>(context).colors;
@@ -26,7 +28,7 @@ class SettingsScreentwo extends StatelessWidget {
         child: Column(
           children: [
             IconButton(
-              icon: Icon(Broken.arrow_left_2,color: Colors.green,),
+              icon: const Icon(Broken.arrow_left_2,color: Colors.green,),
               onPressed: () {
                 // Navigator.push(
                 //   context,
@@ -37,7 +39,7 @@ class SettingsScreentwo extends StatelessWidget {
               },
             ),
             IconButton(
-              icon: Icon(Broken.setting_2,color: Colors.green,),
+              icon: const Icon(Broken.setting_2,color: Colors.green,),
               onPressed: () {
                 Navigator.push(
                   context,

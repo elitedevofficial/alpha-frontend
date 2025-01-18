@@ -9,6 +9,8 @@ import 'package:myapp/widgets/commonwidget/custom_appbar.dart';
 import 'package:myapp/widgets/commonwidget/custom_bottombar.dart';
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }

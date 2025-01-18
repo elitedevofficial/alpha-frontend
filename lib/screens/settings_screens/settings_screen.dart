@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SettingsScreen extends StatefulWidget {
   final Function(String) onUpdateAppBar;
 
-  SettingsScreen({required this.onUpdateAppBar});
+  const SettingsScreen({super.key, required this.onUpdateAppBar});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
@@ -21,6 +21,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Settings Screen'));
+    return const Center(child: Text('Settings Screen'));
   }
 }

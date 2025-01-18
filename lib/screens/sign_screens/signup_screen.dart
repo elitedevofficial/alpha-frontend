@@ -1,9 +1,9 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/screens/account_creation_screen/account_creation.dart';
 import 'package:myapp/screens/sign_screens/signin_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
@@ -11,6 +11,11 @@ import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  SignUpScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final gradientColors = Provider.of<GradientProvider>(context).colors;
@@ -63,12 +68,19 @@ class SignUpScreen extends StatelessWidget {
                 const SizedBox(
                   height: 15,
                 ),
-                const AuthForm(),
+                AuthForm(
+                  emailController: emailController,
+                  passwordController: passwordController,
+                ),
                 const SizedBox(
                   height: 15,
                 ),
                 Center(
-                  child: AuthButton(screenWidth: screenWidth),
+                  child: AuthButton(
+                    screenWidth: screenWidth,
+                    emailController: emailController,
+                    passwordController: passwordController,
+                  ),
                 ),
                 const SizedBox(
                   height: 15,
@@ -158,8 +170,13 @@ class SignUpScreen extends StatelessWidget {
 // <==================== AUTH FORM ===============================>
 
 class AuthForm extends StatefulWidget {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
   const AuthForm({
     super.key,
+    required this.emailController,
+    required this.passwordController,
   });
 
   @override
@@ -168,11 +185,13 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> {
   bool _obscureText = true;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Email Field
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
@@ -187,6 +206,7 @@ class _AuthFormState extends State<AuthForm> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: TextFormField(
+                controller: widget.emailController, // Use the email controller
                 decoration: InputDecoration(
                   hintText: 'Enter Email',
                   hintStyle: TextStyle(
@@ -208,8 +228,7 @@ class _AuthFormState extends State<AuthForm> {
           ),
         ),
 
-        // ==================== PASSWORD FIELD ===============================
-
+        // Password Field
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
@@ -225,6 +244,8 @@ class _AuthFormState extends State<AuthForm> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: TextFormField(
+                controller:
+                    widget.passwordController, // Use the password controller
                 obscureText: _obscureText,
                 decoration: InputDecoration(
                   hintText: 'Enter Password',
@@ -269,15 +290,17 @@ class _AuthFormState extends State<AuthForm> {
   }
 }
 
-// <==================== AUTH BUTTON ===============================>
-
 class AuthButton extends StatelessWidget {
+  final double screenWidth;
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
   const AuthButton({
     super.key,
     required this.screenWidth,
+    required this.emailController,
+    required this.passwordController,
   });
-
-  final double screenWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -295,12 +318,15 @@ class AuthButton extends StatelessWidget {
           ),
           child: TextButton(
             onPressed: () {
+              var userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
+              userDataProvider.setEmail(emailController.text);
+              userDataProvider.setPassword(passwordController.text);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => AccountCreationScreen()),
+                  builder: (context) => const AccountCreationScreen(),
+                ),
               );
-              // onPressed functionality here
             },
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,

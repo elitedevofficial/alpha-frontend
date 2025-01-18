@@ -4,6 +4,8 @@ import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:provider/provider.dart';
 
 class TextEtting extends StatefulWidget {
+  const TextEtting({super.key});
+
   @override
   _TextEttingState createState() => _TextEttingState();
 }
@@ -12,11 +14,11 @@ class _TextEttingState extends State<TextEtting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Settings")),
+      appBar: AppBar(title: const Text("Settings")),
       body: Column(
         children: [
           ListTile(
-            title: Text("Heading Color"),
+            title: const Text("Heading Color"),
             trailing: CircleAvatar(backgroundColor: context.watch<ColorProvider>().headingColor),
             onTap: () async {
               Color pickedColor = await showDialog(
@@ -25,13 +27,11 @@ class _TextEttingState extends State<TextEtting> {
                   return ColorPickerDialog(initialColor: context.read<ColorProvider>().headingColor);
                 },
               );
-              if (pickedColor != null) {
-                context.read<ColorProvider>().setHeadingColor(pickedColor);
-              }
-            },
+              context.read<ColorProvider>().setHeadingColor(pickedColor);
+                        },
           ),
           ListTile(
-            title: Text("Sub Heading Color"),
+            title: const Text("Sub Heading Color"),
             trailing: CircleAvatar(backgroundColor: context.watch<ColorProvider>().subHeadingColor),
             onTap: () async {
               Color pickedColor = await showDialog(
@@ -40,16 +40,14 @@ class _TextEttingState extends State<TextEtting> {
                   return ColorPickerDialog(initialColor: context.read<ColorProvider>().subHeadingColor);
                 },
               );
-              if (pickedColor != null) {
-                context.read<ColorProvider>().setSubHeadingColor(pickedColor);
-              }
-            },
+              context.read<ColorProvider>().setSubHeadingColor(pickedColor);
+                        },
           ),
           ElevatedButton(
             onPressed: () {
               context.read<ColorProvider>().resetToDefault();
             },
-            child: Text("Reset to Default"),
+            child: const Text("Reset to Default"),
           ),
         ],
       ),
@@ -60,14 +58,14 @@ class _TextEttingState extends State<TextEtting> {
 class ColorPickerDialog extends StatelessWidget {
   final Color initialColor;
 
-  ColorPickerDialog({required this.initialColor});
+  const ColorPickerDialog({super.key, required this.initialColor});
 
   @override
   Widget build(BuildContext context) {
     Color selectedColor = initialColor;
 
     return AlertDialog(
-      title: Text("Pick a Color"),
+      title: const Text("Pick a Color"),
       content: SingleChildScrollView(
         child: ColorPicker(
           pickerColor: selectedColor,
@@ -78,13 +76,13 @@ class ColorPickerDialog extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text("Cancel"),
+          child: const Text("Cancel"),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text("Select"),
+          child: const Text("Select"),
           onPressed: () {
             Navigator.of(context).pop(selectedColor);
           },
