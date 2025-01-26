@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/providers/userdata_provider.dart';
-import 'package:myapp/screens/account_creation_screen/account_screens/artists_data.dart';
 import 'package:myapp/widgets/commonwidget/acount_creation_button.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/custom_snakbar.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:provider/provider.dart';
 
 class ArtistScreen extends StatefulWidget {
@@ -20,23 +21,65 @@ class ArtistScreen extends StatefulWidget {
 
 class _ArtistScreenState extends State<ArtistScreen> {
   late String selectedLanguage;
+  List<dynamic> artists = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     final languages = context.read<UserDataProvider>().selectedLanguages;
     selectedLanguage = languages.isNotEmpty ? languages[0] : "Language";
+    _fetchArtists(
+        selectedLanguage); // Fetch artists when the screen is initialized
+  }
+
+  // Fetch artists from the backend API
+  Future<void> _fetchArtists(String genre) async {
+    setState(() {
+      isLoading = true; // Show loading indicator
+    });
+
+    try {
+      final response = await http.get(Uri.parse(
+          'http://172.232.124.96:5056/api/user/artists?genre=$genre'));
+
+      // Accept both 200 and 201 as valid responses
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data.containsKey('artists') && data['artists'] is List) {
+          setState(() {
+            artists = data['artists']; // Set fetched artists
+          });
+        } else {
+          setState(() {
+            artists = []; // Empty list if 'artists' is missing or invalid
+          });
+        }
+      } else {
+        throw Exception('Failed to load artists: ${response.statusCode}');
+      }
+    } catch (error) {
+      setState(() {
+        artists = []; // Reset the list if an error occurs
+      });
+    } finally {
+      setState(() {
+        isLoading = false; // Hide loading indicator
+      });
+    }
   }
 
   void selectLanguage(String language) {
     setState(() {
       selectedLanguage = language;
     });
+    _fetchArtists(language); // Fetch new artists when the language is changed
     Navigator.pop(context);
   }
 
   void showLanguagePopup() {
-    final selectedLanguages = context.read<UserDataProvider>().selectedLanguages;
+    final selectedLanguages =
+        context.read<UserDataProvider>().selectedLanguages;
 
     showDialog(
       context: context,
@@ -85,29 +128,90 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 
-  void handleContinue() {
-    final selectedArtists = context.read<UserDataProvider>().selectedArtists;
+  void handleContinue() async {
+  final selectedArtists = context.read<UserDataProvider>().selectedArtists;
 
-    if (selectedArtists.length < 3) {
+  if (selectedArtists.length < 3) {
+    SlidingSnackbar(
+      context: context,
+      message: "Please select at least 3 artists.",
+      isSuccess: false,
+    ).show();
+    return;
+  }
+
+  try {
+    final userDataProvider =
+        Provider.of<UserDataProvider>(context, listen: false);
+    final userData = userDataProvider.getUserData();
+
+    // Extract fields from userData
+    final username = userData['username'];
+    final password = userData['password'];
+    final email = userData['email'];
+    final dob = userData['dob']; // Can remain null
+    final profileImage = userData['profile_image']; // Can remain null
+    final favLang = userData['selectedLanguages']; // Can remain null
+    final ipAddress = userData['ipAddress']; // Can remain null
+
+    // Ensure only the required fields are validated
+    if (username == null || password == null || email == null) {
       SlidingSnackbar(
         context: context,
-        message: "Please select at least 3 artists.",
+        message: "Please fill in all the required fields.",
         isSuccess: false,
       ).show();
-    } else {
-      final userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
-      userDataProvider.printUserData();
+      return;
+    }
+
+    // Prepare the request body
+    final requestBody = {
+      'username': username,
+      'password': password,
+      'email': email,
+      'dob': dob, // Can remain null
+      'profile_image': profileImage, // Can remain null
+      'fav_lang': favLang, // Can remain null
+      'fav_artists': selectedArtists,
+      'ipAddress': ipAddress, // Can remain null
+    };
+
+    final response = await http.post(
+      Uri.parse('http://172.232.124.96:5056/api/auth/signup'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 201) {
       SlidingSnackbar(
         context: context,
         message: "Account Created Successfully",
         isSuccess: true,
       ).show();
+
+      // Navigate to the next screen or perform other actions
+      widget.onContinue();
+    } else {
+      SlidingSnackbar(
+        context: context,
+        message: "Failed to create account: ${response.body}",
+        isSuccess: false,
+      ).show();
     }
+  } catch (error) {
+    SlidingSnackbar(
+      context: context,
+      message: "An error occurred: $error",
+      isSuccess: false,
+    ).show();
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final artists = artistData[selectedLanguage] ?? [];
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -162,81 +266,85 @@ class _ArtistScreenState extends State<ArtistScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
             ),
-            child: artists.isNotEmpty
-                ? GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                      childAspectRatio: 0.8,
-                    ),
-                    itemCount: artists.length,
-                    itemBuilder: (context, index) {
-                      final artist = artists[index];
-                      final artistName = artist["name"]!;
-                      final isSelected = context
-                          .watch<UserDataProvider>()
-                          .selectedArtists
-                          .contains(artistName);
-                      return GestureDetector(
-                        onTap: () => context
-                            .read<UserDataProvider>()
-                            .toggleArtistSelection(artistName),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: isSelected
-                                ? activeContainerGardient
-                                : containerGardient,
-                            borderRadius: BorderRadius.circular(10),
-                            border: GradientBoxBorder(
-                              gradient: activeContainerBorderGardient,
-                              width: 1,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                height: 100,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    topRight: Radius.circular(10),
-                                  ),
-                                  image: DecorationImage(
-                                    image: AssetImage(artist["image"]!),
-                                    fit: BoxFit.cover,
-                                  ),
+            child: isLoading
+                ? Center(
+                    child:
+                        CircularProgressIndicator()) // Show loading indicator
+                : artists.isNotEmpty
+                    ? GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0,
+                          childAspectRatio: 0.8,
+                        ),
+                        itemCount: artists.length,
+                        itemBuilder: (context, index) {
+                          final artist = artists[index];
+                          final artistName = artist["name"];
+                          final isSelected = context
+                              .watch<UserDataProvider>()
+                              .selectedArtists
+                              .contains(artistName);
+                          return GestureDetector(
+                            onTap: () => context
+                                .read<UserDataProvider>()
+                                .toggleArtistSelection(artistName),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: isSelected
+                                    ? activeContainerGardient
+                                    : containerGardient,
+                                borderRadius: BorderRadius.circular(10),
+                                border: GradientBoxBorder(
+                                  gradient: activeContainerBorderGardient,
+                                  width: 1,
                                 ),
                               ),
-                              const SizedBox(height: 10),
-                              Center(
-                                child: Text(
-                                  artistName,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(10),
+                                      ),
+                                      image: DecorationImage(
+                                        image: NetworkImage(artist["image"]),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
+                                  const SizedBox(height: 10),
+                                  Center(
+                                    child: Text(
+                                      artistName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Text(
+                          "No artists found for $selectedLanguage",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
                           ),
                         ),
-                      );
-                    },
-                  )
-                : Center(
-                    child: Text(
-                      "No artists found for $selectedLanguage",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
                       ),
-                    ),
-                  ),
           ),
         ),
         const Spacer(),
@@ -254,4 +362,3 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 }
-

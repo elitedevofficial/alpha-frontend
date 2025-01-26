@@ -12,7 +12,6 @@ class UserDataProvider extends ChangeNotifier {
   List<String> favArtist = [];
   int? _age;
   DateTime? _birthdate;
-  
 
   // Set initial values for email and password
   void setInitialData(String email, String password) {
@@ -139,5 +138,21 @@ class UserDataProvider extends ChangeNotifier {
     print('Birth Date: $birthdate');
     print('Favorite Languages: $selectedLanguages');
     print('Favorite Artists: $_selectedArtists');
+  }
+
+  // Consolidate user data into a single map for API calls
+  Map<String, dynamic> getUserData() {
+    return {
+      'email': email,
+      'password': password,
+      'username': username,
+      'userId': userId,
+      'coverImg': coverImg,
+      'birthDate': birthDate?.toString(), // Convert to string
+      'gender': gender,
+      'age': _age,
+      'selectedLanguages': selectedLanguages,
+      'favoriteArtists': _selectedArtists,
+    };
   }
 }

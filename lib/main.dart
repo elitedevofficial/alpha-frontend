@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ALPhA App',
+      title: 'ALPhA MUSIX APP',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'LexendDeca',

@@ -302,6 +302,11 @@ class AuthButton extends StatelessWidget {
     required this.passwordController,
   });
 
+  bool _validateEmail(String email) {
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    return emailRegex.hasMatch(email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -318,9 +323,34 @@ class AuthButton extends StatelessWidget {
           ),
           child: TextButton(
             onPressed: () {
+              String email = emailController.text.trim();
+              String password = passwordController.text.trim();
+
+              if (email.isEmpty || !_validateEmail(email)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                 const SnackBar(
+                    content: const Text("Please enter a valid email address."),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              if (password.isEmpty || password.length < 6) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                 const SnackBar(
+                    content: const Text(
+                        "Password must be at least 6 characters long."),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
               var userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
-              userDataProvider.setEmail(emailController.text);
-              userDataProvider.setPassword(passwordController.text);
+              userDataProvider.setEmail(email);
+              userDataProvider.setPassword(password);
+
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -358,6 +388,7 @@ class AuthButton extends StatelessWidget {
     );
   }
 }
+
 
 // <==================== GOOGLE BUTTON ===============================>
 

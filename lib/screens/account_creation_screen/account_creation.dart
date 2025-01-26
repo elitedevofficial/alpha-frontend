@@ -7,6 +7,7 @@ import 'package:myapp/screens/account_creation_screen/account_screens/age_screen
 import 'package:myapp/screens/account_creation_screen/account_screens/artist_screen.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/gender_screen.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/language_screen.dart';
+import 'package:myapp/screens/account_creation_screen/account_screens/otp_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,8 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
     "Gender",
     "Name",
     "Language",
-    "Artist"
+    "Artist",
+    "Otp"
   ];
 
   void _goToNextPage() {
@@ -133,6 +135,7 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
                         AccountScreen(onContinue: _goToNextPage),
                         LanguageScreen(onContinue: _goToNextPage),
                         ArtistScreen(onContinue: _goToNextPage),
+                        OtpScreen(onContinue: _goToNextPage),
                       ],
                     ),
                   ),
