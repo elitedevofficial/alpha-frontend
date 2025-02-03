@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
-import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/screens/onboarding_screen/onboarding_widget/onboarding_content.dart';
 import 'package:myapp/screens/sign_screens/signin_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
-import 'package:provider/provider.dart';
+
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -38,24 +37,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _navigateToSignIn() {
     Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => SigninScreen()));
+        MaterialPageRoute(builder: (context) => SigninScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = Provider.of<GradientProvider>(context).colors;
-
+    
     return Scaffold(
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                stops: const [0.0, 0.44, 1.0],
-              ),
+              gradient: getAppGradient(context)
             ),
           ),
           SafeArea(
@@ -64,7 +57,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  
                   Container(
                     width: 100,
                     height: 40,
@@ -111,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   const Spacer(),
-                 
+
                   Expanded(
                     flex: 8,
                     child: PageView(
@@ -182,7 +174,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       fontWeight: FontWeight.w400,
                                     ),
                                   ),
-                                  
                                   SizedBox(width: 8),
                                   Icon(
                                     Broken.arrow_right_3,

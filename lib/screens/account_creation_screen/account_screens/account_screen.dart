@@ -18,8 +18,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final TextEditingController _usernameController =
-      TextEditingController(text: "UserName");
+  final TextEditingController _usernameController = TextEditingController();
   bool _isTermsAccepted = false;
   bool _isPrivacyAccepted = false;
 

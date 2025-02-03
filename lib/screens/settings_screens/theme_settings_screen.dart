@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:myapp/providers/gradient_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +10,14 @@ class ThemeSettingsScreen extends StatefulWidget {
 }
 
 class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
+  List<List<Color>> predefinedGradients = [
+    [Colors.blue, Colors.lightBlue, Colors.cyan],
+    [Colors.red, Colors.orange, Colors.yellow],
+    [Colors.green, Colors.teal, Colors.lightGreen],
+    [Colors.purple, Colors.pink, Colors.deepPurple],
+    [Colors.brown, Colors.grey, Colors.blueGrey],
+  ];
+
   List<Color> selectedColors = [];
 
   @override
@@ -20,30 +27,43 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
     selectedColors = List.from(gradientProvider.colors);
   }
 
-  // Open color picker dialog
-  void pickColor(int index) {
-    Color newColor = selectedColors[index];
+  // Open predefined gradient picker dialog
+  void pickGradient() {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Pick Color ${index + 1}'),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: newColor,
-              onColorChanged: (color) {
-                setState(() {
-                  selectedColors[index] = color;
-                });
-              },
-            ),
+          title: const Text('Pick Gradient'),
+          content: Wrap(
+            spacing: 10,
+            children: predefinedGradients.map((gradient) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedColors = List.from(gradient);
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: gradient,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.black, width: 1),
+                  ),
+                ),
+              );
+            }).toList(),
           ),
           actions: [
             TextButton(
-              child: const Text('Done'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
@@ -75,13 +95,11 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Color selection tiles
-            for (int i = 0; i < selectedColors.length; i++)
-              ListTile(
-                title: Text('Color ${i + 1}'),
-                trailing: CircleAvatar(backgroundColor: selectedColors[i]),
-                onTap: () => pickColor(i),
-              ),
+            // Gradient selection button
+            ElevatedButton(
+              onPressed: pickGradient,
+              child: const Text('Select Gradient'),
+            ),
             const SizedBox(height: 20),
             // Save button
             ElevatedButton(
@@ -95,7 +113,7 @@ class _ThemeSettingsScreenState extends State<ThemeSettingsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red, // Optional: Change the button color
               ),
-              child: Text('Reset to Default'),
+              child: const Text('Reset to Default'),
             ),
           ],
         ),

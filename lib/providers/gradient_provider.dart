@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GradientProvider with ChangeNotifier {
   // Default gradient colors using hex values
   List<Color> _colors = [
-    const Color(0xFF080F20), // Dark blue (Hex: #080F20)
-    const Color(0xFF151A4D), // Medium blue (Hex: #151A4D)
-    const Color(0xFF382C74), // Purple (Hex: #382C74)
+    const Color(0xFF25263A), // Dark bluish center
+    const Color.fromARGB(255, 26, 30, 61), // Deep dark blue
+    const Color(0xFF101118) // Purple (Hex: #382C74)
   ];
 
   // Getter for accessing gradient colors
@@ -26,9 +26,9 @@ class GradientProvider with ChangeNotifier {
   // Reset to default gradient colors
   void resetColors() {
     _colors = [
-      const Color(0xFF080F20), // Dark blue (Hex: #080F20)
-      const Color(0xFF151A4D), // Medium blue (Hex: #151A4D)
-      const Color(0xFF382C74), // Purple (Hex: #382C74)
+      const Color(0xFF25263A), // Dark bluish center
+    const Color.fromARGB(255, 26, 30, 61), // Deep dark blue
+    const Color(0xFF101118)  // Purple (Hex: #382C74)
     ];
     notifyListeners();
     _saveColorsToPreferences(); // Save default colors to SharedPreferences

@@ -1,4 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/gradient_provider.dart';
+import 'package:provider/provider.dart';
+
+RadialGradient getAppGradient(
+  BuildContext context,
+) {
+  final gradientColors =
+      Provider.of<GradientProvider>(context).colors;
+  return RadialGradient(
+      center: Alignment(0, -0.6), 
+      radius: 1.2,
+      colors: gradientColors,
+      stops: [0.1, 0.4, 1]);
+}
 
 // _________________CONTAINER GRADIENT_________________________
 
@@ -51,13 +65,13 @@ LinearGradient buttonBorderGardient = LinearGradient(
 // _________________ACTIVE CONTAINER GRADIENT_________________________
 
 LinearGradient activeContainerGardient = LinearGradient(
-    colors: [
-      const Color(0xFF2737CF).withOpacity(0.4),
-      const Color(0xFF6562FB).withOpacity(0.70)
-    ],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-  );
+  colors: [
+    const Color(0xFF2737CF).withOpacity(0.4),
+    const Color(0xFF6562FB).withOpacity(0.70)
+  ],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+);
 
 LinearGradient activeContainerBorderGardient = LinearGradient(
   colors: [

@@ -35,8 +35,6 @@ class LanguageScreen extends StatelessWidget {
       var userDataProvider = context.read<UserDataProvider>();
       userDataProvider.setSelectedLanguages(selectedLanguages);
 
-      // Print the selected languages for confirmation
-      print("Selected Languages: ${selectedLanguages.join(', ')}");
 
       // Proceed with the continuation
       onContinue();

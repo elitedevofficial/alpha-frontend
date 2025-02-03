@@ -11,7 +11,8 @@ void main() {
     MultiProvider(
       providers: [
         // Register UserDataProvider along with other providers
-        ChangeNotifierProvider(create: (_) => UserDataProvider()), // Added UserDataProvider here
+        ChangeNotifierProvider(
+            create: (_) => UserDataProvider()), // Added UserDataProvider here
         ChangeNotifierProvider(create: (_) => GradientProvider()),
         ChangeNotifierProvider(create: (_) => ColorProvider()..loadColors()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ALPhA App',
+      title: 'ALPhA MUSIX APP',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'LexendDeca',

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
-import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/account_screen.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/age_screen.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/artist_screen.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/gender_screen.dart';
 import 'package:myapp/screens/account_creation_screen/account_screens/language_screen.dart';
+import 'package:myapp/screens/account_creation_screen/account_screens/otp_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +28,8 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
     "Gender",
     "Name",
     "Language",
-    "Artist"
+    "Artist",
+    "Otp"
   ];
 
   void _goToNextPage() {
@@ -59,19 +60,15 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = Provider.of<GradientProvider>(context).colors;
+    
+   
 
     return Scaffold(
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                stops: const [0.0, 0.44, 1.0],
-              ),
+             gradient: getAppGradient(context)
             ),
           ),
           SafeArea(
@@ -133,6 +130,7 @@ class _AccountCreationScreenState extends State<AccountCreationScreen> {
                         AccountScreen(onContinue: _goToNextPage),
                         LanguageScreen(onContinue: _goToNextPage),
                         ArtistScreen(onContinue: _goToNextPage),
+                        OtpScreen(onContinue: _goToNextPage),
                       ],
                     ),
                   ),
