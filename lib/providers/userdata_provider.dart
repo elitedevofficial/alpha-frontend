@@ -120,6 +120,13 @@ class UserDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Method to set selected artists
+  void setSelectedArtists(List<String> artists) {
+    _selectedArtists.clear();
+    _selectedArtists.addAll(artists);
+    notifyListeners();
+  }
+
   // Method to clear all artists
   void clearArtists() {
     _selectedArtists.clear();

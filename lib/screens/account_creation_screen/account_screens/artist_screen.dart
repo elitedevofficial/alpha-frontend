@@ -129,86 +129,52 @@ class _ArtistScreenState extends State<ArtistScreen> {
   }
 
   void handleContinue() async {
-  final selectedArtists = context.read<UserDataProvider>().selectedArtists;
-
-  if (selectedArtists.length < 3) {
-    SlidingSnackbar(
-      context: context,
-      message: "Please select at least 3 artists.",
-      isSuccess: false,
-    ).show();
-    return;
-  }
-
-  try {
     final userDataProvider =
         Provider.of<UserDataProvider>(context, listen: false);
-    final userData = userDataProvider.getUserData();
+    final selectedArtists = userDataProvider.selectedArtists;
+    final email = userDataProvider.email; // Get email from UserDataProvider
+    print(selectedArtists);
 
-    // Extract fields from userData
-    final username = userData['username'];
-    final password = userData['password'];
-    final email = userData['email'];
-    final dob = userData['dob']; // Can remain null
-    final profileImage = userData['profile_image']; // Can remain null
-    final favLang = userData['selectedLanguages']; // Can remain null
-    final ipAddress = userData['ipAddress']; // Can remain null
-
-    // Ensure only the required fields are validated
-    if (username == null || password == null || email == null) {
+    if (selectedArtists.length < 3) {
       SlidingSnackbar(
         context: context,
-        message: "Please fill in all the required fields.",
+        message: "Please select at least 3 artists.",
         isSuccess: false,
       ).show();
       return;
     }
 
-    // Prepare the request body
-    final requestBody = {
-      'username': username,
-      'password': password,
-      'email': email,
-      'dob': dob, // Can remain null
-      'profile_image': profileImage, // Can remain null
-      'fav_lang': favLang, // Can remain null
-      'fav_artists': selectedArtists,
-      'ipAddress': ipAddress, // Can remain null
-    };
+    userDataProvider.setSelectedArtists(selectedArtists);
 
-    final response = await http.post(
-      Uri.parse('http://172.232.124.96:5056/api/auth/signup'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('http://172.232.124.96:5056/api/auth/send-otp'),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"email": email}),
+      );
 
-    if (response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        SlidingSnackbar(
+          context: context,
+          message: "OTP sent successfully!",
+          isSuccess: true,
+        ).show();
+        widget.onContinue();
+      } else {
+        SlidingSnackbar(
+          context: context,
+          message: "Failed to send OTP. Please try again.",
+          isSuccess: false,
+        ).show();
+      }
+    } catch (e) {
       SlidingSnackbar(
         context: context,
-        message: "Account Created Successfully",
-        isSuccess: true,
-      ).show();
-
-      // Navigate to the next screen or perform other actions
-      widget.onContinue();
-    } else {
-      SlidingSnackbar(
-        context: context,
-        message: "Failed to create account: ${response.body}",
+        message: "An error occurred. Please check your connection.",
         isSuccess: false,
       ).show();
     }
-  } catch (error) {
-    SlidingSnackbar(
-      context: context,
-      message: "An error occurred: $error",
-      isSuccess: false,
-    ).show();
   }
-}
-
 
   @override
   Widget build(BuildContext context) {

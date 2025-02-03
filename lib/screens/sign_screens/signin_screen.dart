@@ -2,13 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
-import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/screens/sign_screens/signup_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:provider/provider.dart';
-
 import '../../widgets/commonwidget/gradientBorder.dart';
 
 class SigninScreen extends StatelessWidget {
@@ -16,7 +14,6 @@ class SigninScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = Provider.of<GradientProvider>(context).colors;
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -24,12 +21,7 @@ class SigninScreen extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                stops: const [0.0, 0.44, 1.0],
-              ),
+              gradient: getAppGradient(context)
             ),
           ),
           Padding(
@@ -268,9 +260,7 @@ class _AuthFormState extends State<AuthForm> {
         // <==================== FORGOT PASSWORD  ===============================>
 
         TextButton(
-          onPressed: () {
-            print('Button Pressed');
-          },
+          onPressed: () => {},
           child: Text(
             'Forgot Password?',
             style: TextStyle(
@@ -315,9 +305,9 @@ class AuthButton extends StatelessWidget {
             onPressed: () {
               // onPressed functionality here
               Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MainScreen()),
-                      );
+                context,
+                MaterialPageRoute(builder: (context) => MainScreen()),
+              );
             },
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
-import 'package:myapp/widgets/commonwidget/acount_creation_button.dart';
+import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OtpScreen extends StatefulWidget {
   final VoidCallback onContinue;
@@ -31,6 +33,77 @@ class _OtpScreenState extends State<OtpScreen> {
     }
     super.dispose();
   }
+
+  // Function to handle OTP verification and API call
+  Future<void> handleOnContinue() async {
+  // Retrieve OTP from controllers
+  String otp = _controllers.map((controller) => controller.text).join();
+
+  final userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
+
+  // Validate OTP length
+  if (otp.length == 4) {
+    try {
+      final userData = userDataProvider.getUserData();
+
+      // Extract fields from userData
+      final username = userData['username'];
+      final password = userData['password'];
+      final email = userData['email'];
+      final dob = userData['dob']; // Can remain null
+      final profileImage = userData['profile_image']; // Can remain null
+      final favLang = userData['selectedLanguages']; // Can remain null
+      final ipAddress = userData['ipAddress']; // Can remain null
+
+      // Prepare the request body
+      final requestBody = {
+        'username': username,
+        'password': password,
+        'email': email,
+        'dob': dob, // Can remain null
+        'profile_image': profileImage, // Can remain null
+        'fav_lang': favLang, // Can remain null
+        'fav_artists': userDataProvider.selectedArtists,
+        'ipAddress': ipAddress, // Can remain null
+        'otp': otp, // Include OTP here
+      };
+
+      final response = await http.post(
+        Uri.parse('http://172.232.124.96:5056/api/auth/signup'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 201) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Account Created Successfully")),
+        );
+
+        // Navigate or call the onContinue callback
+        widget.onContinue();
+      } else {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to create account: ${response.body}")),
+        );
+      }
+    } catch (error) {
+      // Handle any error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred: $error")),
+      );
+    }
+  } else {
+    // Show validation message if OTP is not valid
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please enter a valid 4-digit OTP')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +157,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             ),
                             keyboardType: TextInputType.number,
                             maxLength: 1,
+                            controller: _controllers[index],
                             decoration: InputDecoration(
                               counterText: "",
                               enabledBorder: OutlineInputBorder(
@@ -114,55 +188,52 @@ class _OtpScreenState extends State<OtpScreen> {
                         );
                       }),
                     ),
-                   const SizedBox(height: 15,),
+                    const SizedBox(height: 15),
                     Padding(
                       padding: const EdgeInsets.only(left: 5, right: 5),
                       child: Container(
-                      height: 44,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: buttonGardient),
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Container(
-                          decoration: BoxDecoration(
+                        height: 44,
+                        decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            gradient: buttonBorderGardient,
-                          ),
-                          child: TextButton(
-                            onPressed: () {
-                              
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
+                            gradient: buttonGardient),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: buttonBorderGardient,
                             ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "Verify OTP",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                            child: TextButton(
+                              onPressed: handleOnContinue, // Use the handleOnContinue function
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Verify OTP",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Broken.arrow_right_2,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ],
+                                  SizedBox(width: 8),
+                                  Icon(
+                                    Broken.arrow_right_2,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
                         ),
                       ),
                     ),
-                   
                   ],
                 ),
               ),

@@ -1,14 +1,17 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
-import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/screens/account_creation_screen/account_creation.dart';
 import 'package:myapp/screens/sign_screens/signin_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
+import 'package:myapp/widgets/commonwidget/custom_snakbar.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUpScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -18,7 +21,7 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = Provider.of<GradientProvider>(context).colors;
+    
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
@@ -26,12 +29,7 @@ class SignUpScreen extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                stops: const [0.0, 0.44, 1.0],
-              ),
+             gradient: getAppGradient(context)
             ),
           ),
           Padding(
@@ -185,6 +183,37 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> {
   bool _obscureText = true;
+  Timer? _debounce;
+  String? _emailError;
+
+  // Function to check email availability
+  Future<void> _checkEmailAvailability(String email) async {
+    if (email.isEmpty) {
+      setState(() {
+        _emailError = null; // Reset error if field is empty
+      });
+      return;
+    }
+
+    final Uri apiUrl = Uri.parse(
+        'http://172.232.124.96:5056/api/auth/email-availability'); // Replace with your API URL
+    final response = await http.post(
+      apiUrl,
+      body: jsonEncode({'email': email}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      bool isAvailable = jsonDecode(response.body)['available'];
+      setState(() {
+        _emailError = isAvailable ? null : 'Email is already in use';
+      });
+    } else {
+      setState(() {
+        _emailError = 'Error checking email. Try again later.';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +235,13 @@ class _AuthFormState extends State<AuthForm> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: TextFormField(
-                controller: widget.emailController, // Use the email controller
+                controller: widget.emailController,
+                onChanged: (value) {
+                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+                  _debounce = Timer(const Duration(milliseconds: 800), () {
+                    _checkEmailAvailability(value);
+                  });
+                },
                 decoration: InputDecoration(
                   hintText: 'Enter Email',
                   hintStyle: TextStyle(
@@ -217,16 +252,23 @@ class _AuthFormState extends State<AuthForm> {
                   border: InputBorder.none,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  suffixIcon: const Icon(
-                    Broken.message_2,
-                    color: Colors.white,
-                  ),
+                  suffixIcon: _emailError == null
+                      ? const Icon(Broken.message_2, color: Colors.white)
+                      : const Icon(Icons.error, color: Colors.red),
                 ),
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
           ),
         ),
+        if (_emailError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 5, left: 10),
+            child: Text(
+              _emailError!,
+              style: const TextStyle(color: Colors.red, fontSize: 14),
+            ),
+          ),
 
         // Password Field
         const SizedBox(height: 16),
@@ -244,8 +286,7 @@ class _AuthFormState extends State<AuthForm> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: TextFormField(
-                controller:
-                    widget.passwordController, // Use the password controller
+                controller: widget.passwordController,
                 obscureText: _obscureText,
                 decoration: InputDecoration(
                   hintText: 'Enter Password',
@@ -288,6 +329,12 @@ class _AuthFormState extends State<AuthForm> {
       ],
     );
   }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
 }
 
 class AuthButton extends StatelessWidget {
@@ -322,41 +369,66 @@ class AuthButton extends StatelessWidget {
             gradient: buttonBorderGardient,
           ),
           child: TextButton(
-            onPressed: () {
+            onPressed: () async {
               String email = emailController.text.trim();
               String password = passwordController.text.trim();
 
+              // Validate email
               if (email.isEmpty || !_validateEmail(email)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                 const SnackBar(
-                    content: const Text("Please enter a valid email address."),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                SlidingSnackbar(
+                  context: context,
+                  message: "Please enter a valid email address.",
+                  isSuccess: false,
+                ).show();
                 return;
               }
 
+              // Validate password
               if (password.isEmpty || password.length < 6) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                 const SnackBar(
-                    content: const Text(
-                        "Password must be at least 6 characters long."),
-                    backgroundColor: Colors.red,
-                  ),
-                );
+                SlidingSnackbar(
+                  context: context,
+                  message: "Password must be at least 6 characters long.",
+                  isSuccess: false,
+                ).show();
                 return;
               }
 
-              var userDataProvider = Provider.of<UserDataProvider>(context, listen: false);
+              var userDataProvider =
+                  Provider.of<UserDataProvider>(context, listen: false);
               userDataProvider.setEmail(email);
               userDataProvider.setPassword(password);
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AccountCreationScreen(),
-                ),
+              final Uri apiUrl = Uri.parse(
+                  'http://172.232.124.96:5056/api/auth/email-availability');
+              final response = await http.post(
+                apiUrl,
+                body: jsonEncode({'email': email}),
+                headers: {'Content-Type': 'application/json'},
               );
+
+              if (response.statusCode == 200) {
+                bool isAvailable = jsonDecode(response.body)['available'];
+                if (isAvailable) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AccountCreationScreen(),
+                    ),
+                  );
+                } else {
+                  SlidingSnackbar(
+                    context: context,
+                    message: "Email is already in use.",
+                    isSuccess: false,
+                  ).show();
+                }
+              } else {
+                SlidingSnackbar(
+                  context: context,
+                  message: "Error checking email. Try again later.",
+                  isSuccess: false,
+                ).show();
+              }
             },
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
@@ -389,7 +461,6 @@ class AuthButton extends StatelessWidget {
   }
 }
 
-
 // <==================== GOOGLE BUTTON ===============================>
 
 class GoogleButton extends StatelessWidget {
@@ -406,9 +477,7 @@ class GoogleButton extends StatelessWidget {
       width: screenWidth * 9,
       height: 44,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        gradient: containerGardient,
-      ),
+          borderRadius: BorderRadius.circular(10), gradient: containerGardient),
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Container(

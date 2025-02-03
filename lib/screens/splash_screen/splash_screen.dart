@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/screens/onboarding_screen/onboarding_screen.dart';
+import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
@@ -39,19 +39,15 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = Provider.of<GradientProvider>(context).colors;
+    
+    
 
     return Scaffold(
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topRight,
-                end: Alignment.bottomLeft,
-                stops: const [0.0, 0.44, 1.0],
-              ),
+            gradient: getAppGradient(context)
             ),
           ),
           Column(
