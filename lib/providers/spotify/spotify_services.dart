@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class SpotifyService {
-  final String clientId = '5ac0be1a7182430da76690f6a85bb72e';
-  final String clientSecret = '67c9854fe1b148fa858f3a983a58455b';
+  final String clientId = 'null';
+  final String clientSecret = 'null';
   String? accessToken;
 
   // Get Spotify Access Token
