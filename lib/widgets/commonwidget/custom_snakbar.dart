@@ -21,14 +21,14 @@ class SlidingSnackbar {
     );
 
     final animation = Tween<Offset>(
-      begin: const Offset(0.0, 1.0),
+      begin: const Offset(0.0, -1.0),
       end: Offset.zero,
     ).animate(
         CurvedAnimation(parent: animationController, curve: Curves.easeOut));
 
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        bottom: 20,
+        top: 40,
         left: 20,
         right: 20,
         child: SlideTransition(
@@ -40,16 +40,16 @@ class SlidingSnackbar {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 gradient: isSuccess
-                    ? LinearGradient(
+                    ? const LinearGradient(
                         colors: [
-                          const Color(0xFF101435).withOpacity(0.5),
-                          const Color(0xFF101435).withOpacity(0.5),
+                           Color(0xFF101435),
+                           Color(0xFF101435),
                         ],
                       )
-                    :  LinearGradient(
-                        colors: [
-                          const Color(0xFF101435).withOpacity(0.5),
-                          const Color(0xFF101435).withOpacity(0.5),
+                    :  const LinearGradient(
+                        colors:  [
+                           Color(0xFF101435),
+                           Color(0xFF101435),
                         ],
                       ),
                 border: Border.all(
