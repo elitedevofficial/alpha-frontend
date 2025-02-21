@@ -2,25 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/providers/userdata_provider.dart';
-import 'package:myapp/screens/main_screen.dart';
+import 'package:myapp/screens/forget_pass_screen/change_pass_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
-class OtpScreen extends StatefulWidget {
+class ForgetOtpScreen extends StatefulWidget {
   final VoidCallback onContinue;
 
-  const OtpScreen({required this.onContinue, super.key});
+  const ForgetOtpScreen({required this.onContinue, super.key});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  State<ForgetOtpScreen> createState() => _ForgetOtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
   late List<TextEditingController> _controllers;
 
   @override
@@ -81,30 +79,21 @@ class _OtpScreenState extends State<OtpScreen> {
         );
 
         if (response.statusCode == 201) {
-          final responseData = jsonDecode(response.body);
-          final token = responseData['token'];
-          final userId = responseData['userId'];
-
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('auth_token', token);
-          await prefs.setString('userId', userId);
-          await prefs.setBool('isLoggedIn', true);
-
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MainScreen()),
-            );
-          }
-        } else {
-          // ignore: use_build_context_synchronously
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text("Failed to create account: ${response.body}")),
+            SnackBar(content: Text("Email Verify Success")),
+          );
+
+          // Navigate or call the onContinue callback
+          widget.onContinue();
+        } else {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to Verify Email")),
           );
         }
       } catch (error) {
-        // ignore: use_build_context_synchronously
+        // Handle any error
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("An error occurred: $error")),
         );
@@ -216,8 +205,14 @@ class _OtpScreenState extends State<OtpScreen> {
                               gradient: buttonBorderGardient,
                             ),
                             child: TextButton(
-                              onPressed:
-                                  handleOnContinue, // Use the handleOnContinue function
+                              onPressed: () {
+                                // onPressed functionality here
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChangePassScreen()),
+                                );
+                              }, // Use the handleOnContinue function
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 shape: RoundedRectangleBorder(

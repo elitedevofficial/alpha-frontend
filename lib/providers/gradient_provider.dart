@@ -2,39 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GradientProvider with ChangeNotifier {
-  // Default gradient colors using hex values
+  // Default gradient colors
   List<Color> _colors = [
-    const Color(0xFF25263A), // Dark bluish center
-    const Color.fromARGB(255, 26, 30, 61), // Deep dark blue
-    const Color(0xFF101118) // Purple (Hex: #382C74)
+    const Color(0xFF292555),
+    const Color(0xFF1F1D42),
+    const Color(0xFF0F0F27)
   ];
 
-  // Getter for accessing gradient colors
   List<Color> get colors => _colors;
+
+  // Getters for individual colors
+  Color get primaryColor => _colors.first; // First (darkest or base color)
+  Color get secondaryColor =>
+      _colors.length > 1 ? _colors[1] : _colors.first; // Middle (lighter color)
+  Color get tertiaryColor => _colors.length > 2
+      ? _colors.last
+      : _colors.first; // Last (darkest/lightest)
 
   GradientProvider() {
     _loadColorsFromPreferences();
   }
 
-  // Update colors dynamically and save to preferences
   void updateColors(List<Color> newColors) {
     _colors = newColors;
     notifyListeners();
     _saveColorsToPreferences();
   }
 
-  // Reset to default gradient colors
   void resetColors() {
     _colors = [
-      const Color(0xFF25263A), // Dark bluish center
-    const Color.fromARGB(255, 26, 30, 61), // Deep dark blue
-    const Color(0xFF101118)  // Purple (Hex: #382C74)
+      const Color(0xFF292555),
+      const Color(0xFF1F1D42),
+      const Color(0xFF0F0F27)
     ];
     notifyListeners();
-    _saveColorsToPreferences(); // Save default colors to SharedPreferences
+    _saveColorsToPreferences();
   }
 
-  // Load colors from SharedPreferences
   Future<void> _loadColorsFromPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     final savedColors = prefs.getStringList('gradientColors');
@@ -44,7 +48,6 @@ class GradientProvider with ChangeNotifier {
     }
   }
 
-  // Save colors to SharedPreferences
   Future<void> _saveColorsToPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     final colorStrings =

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
+import 'package:myapp/providers/gradient_provider.dart';
+import 'package:myapp/widgets/commonwidget/common_colors.dart';
+import 'package:provider/provider.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -19,11 +22,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gradientProvider = Provider.of<GradientProvider>(context);
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: Color.fromARGB(255, 26, 30, 61),
+      backgroundColor: gradientProvider.secondaryColor,
       flexibleSpace: Padding(
-        padding: const EdgeInsets.only(top: 15, left: 10, right: 10),
+        padding: const EdgeInsets.only(top: 25, left: 10, right: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -35,7 +39,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () => drawerControl(),
               child: Icon(
                 Broken.menu,
-                color: Theme.of(context).primaryColor,
+                size: 22,
+                color: snowWhite,
               ),
             ),
             Text(
@@ -43,10 +48,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w500,
-                // color: Theme.of(context).primaryColor,
+                color: snowWhite
               ),
             ),
-            Spacer(),
+           const Spacer(),
             ...actions,
             if (currentIndex != 4)
               Container(
@@ -77,16 +82,3 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-// title: Text(title),
-      // actions: [
-      //   IconButton(
-      //     icon: Icon(Icons.menu),
-      //     onPressed: () => drawerControl(),  // Call the drawer control callback here
-      //   ),
-      // if (currentIndex != 4) // Hide profile icon on Profile screen
-      //   IconButton(
-      //     icon: const Icon(Icons.person),
-      //     onPressed: onProfileTap,
-      //   ),
-      //   ...actions, // Add additional icons based on the screen
-      // ],

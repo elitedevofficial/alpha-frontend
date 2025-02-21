@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:myapp/core/icon_fonts/broken_icons.dart';
+import 'package:myapp/providers/gradient_provider.dart';
+import 'package:myapp/widgets/commonwidget/common_colors.dart';
+import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
+import 'package:provider/provider.dart';
 
 class DrawerMenu extends StatelessWidget {
   final Function(String) onScreenSelected;
@@ -13,8 +17,13 @@ class DrawerMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gradientProvider = Provider.of<GradientProvider>(context);
+    const double twoBoxWidth = 88;
+    const double twoBoxHeight = 39;
+    const double iconSize = 22;
+    const double blankHeight = 10;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 26, 30, 61),
+      backgroundColor: gradientProvider.secondaryColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(left: 5, right: 5),
@@ -23,11 +32,12 @@ class DrawerMenu extends StatelessWidget {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: snowWhite,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.only(
+                        left: 5, right: 5, top: 6, bottom: 6),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,7 +45,7 @@ class DrawerMenu extends StatelessWidget {
                           Container(
                             width: 30,
                             height: 30,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
                             ),
                             child: ClipOval(
@@ -47,28 +57,53 @@ class DrawerMenu extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Text('UXERNAME'),
+                          const Text(
+                            'Developer',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'LexendDeca',
+                            ),
+                          ),
                         ]),
                   ),
                 ),
+                const SizedBox(
+                  height: blankHeight,
+                ),
+                Container(
+                  height: 1,
+                  decoration: BoxDecoration(
+                    color: snowWhite,
+                  ),
+                ),
+                const SizedBox(
+                  height: blankHeight,
+                ),
                 DrawerCardWidget(
-                  sideButtonTap: () {
-                    advanceddrawerController.hideDrawer();
-                    onScreenSelected("settings");
-                  },
-                  sideTitle: "Settings",
-                  // sideIcon: sideIcon)
-                )
+                    sideButtonTap: () {
+                      advanceddrawerController.hideDrawer();
+                    },
+                    sideTitle: "Listening History",
+                    sideIcon: Broken.timer),
+                const SizedBox(
+                  height: blankHeight,
+                ),
+                DrawerCardWidget(
+                    sideButtonTap: () {
+                      advanceddrawerController.hideDrawer();
+                    },
+                    sideTitle: "What's New",
+                    sideIcon: Broken.notification_1)
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        color: Colors.green,
+      bottomNavigationBar: SizedBox(
         height: 120,
         child: Padding(
           padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
@@ -77,54 +112,104 @@ class DrawerMenu extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                height: 50,
+                height: 44,
                 decoration: BoxDecoration(
-                    color: Colors.red, borderRadius: BorderRadius.circular(10)),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Icon(Broken.timer_1),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'Sleep Timer',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'LexendDeca',
+                    borderRadius: BorderRadius.circular(10),
+                    gradient: containerGardient),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: GradientBoxBorder(
+                      gradient: containerBorderGardient,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Broken.timer_1,
+                          size: 22,
+                          color: snowWhite,
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          'Sleep Timer',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'LexendDeca',
+                            color: snowWhite,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 53,
-                    width: 88,
-                    decoration: BoxDecoration(
-                        color: Colors.yellow,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Icon(Broken.edit),
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      height: twoBoxHeight,
+                      width: twoBoxWidth,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: containerGardient),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: GradientBoxBorder(
+                            gradient: containerBorderGardient,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Icon(
+                          Broken.edit,
+                          size: iconSize,
+                          color: snowWhite,
+                        ),
+                      ),
+                    ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
-                  Container(
-                    height: 53,
-                    width: 88,
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Icon(Broken.setting),
+                  GestureDetector(
+                    onTap: () {
+                      advanceddrawerController.hideDrawer();
+                      onScreenSelected("settings");
+                    },
+                    child: Container(
+                      height: twoBoxHeight,
+                      width: twoBoxWidth,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          gradient: containerGardient),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: GradientBoxBorder(
+                            gradient: containerBorderGardient,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Icon(
+                          Broken.setting,
+                          size: iconSize,
+                          color: snowWhite,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -133,79 +218,58 @@ class DrawerMenu extends StatelessWidget {
         ),
       ),
     );
-    // return Drawer(
-    //   child: ListView(
-    //     children: [
-    //       const DrawerHeader(child: Text("Menu", style: TextStyle(fontSize: 22))),
-    //       ListTile(
-    //         title: const Text("Settings"),
-    //         onTap: () => onScreenSelected("settings"),
-    //       ),
-    //       ListTile(
-    //         title: const Text("Listening History"),
-    //         onTap: () => onScreenSelected("listening_history"),
-    //       ),
-    //       ListTile(
-    //         title: const Text("What's New"),
-    //         onTap: () => onScreenSelected("whats_new"),
-    //       ),
-    //       ListTile(
-    //         title: const Text("Sound Capsule"),
-    //         onTap: () => onScreenSelected("sound_capsule"),
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 }
 
 class DrawerCardWidget extends StatelessWidget {
   final VoidCallback sideButtonTap;
   final String sideTitle;
-  // final IconData sideIcon;
+  final IconData sideIcon;
   const DrawerCardWidget({
     super.key,
     required this.sideButtonTap,
     required this.sideTitle,
-    // required this.sideIcon,
+    required this.sideIcon,
   });
 
   @override
   Widget build(BuildContext context) {
-    // final colorScheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 10,
-        right: 10,
-      ),
-      child: GestureDetector(
-        onTap: sideButtonTap,
-        child: Container(
-          width: 210,
-          height: 50,
-          decoration: BoxDecoration(
-            // color: colorScheme.surface,
+    return GestureDetector(
+      onTap: sideButtonTap,
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
+            gradient: containerGardient),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: GradientBoxBorder(
+              gradient: containerBorderGardient,
+              width: 1.5,
+            ),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10),
+            padding: const EdgeInsets.all(10),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Icon(
-                //   sideIcon,
-                //   size: 25,
-                //   // color: Theme.of(context).primaryColor,
-                // ),
-                // alphawidth10,
+                Icon(
+                  sideIcon,
+                  size: 22,
+                  color: snowWhite,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
                 Text(
                   sideTitle,
                   style: TextStyle(
-                      // color: Theme.of(context).primaryColor,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'LexendDeca'),
-                ),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'LexendDeca',
+                    color: snowWhite,
+                  ),
+                )
               ],
             ),
           ),

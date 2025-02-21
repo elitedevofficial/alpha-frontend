@@ -4,13 +4,14 @@ import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/screens/forget_pass_screen/email_verify.dart';
 import 'package:myapp/screens/main_screen.dart';
+import 'package:myapp/screens/sign_screens/signin_screen.dart';
 import 'package:myapp/screens/sign_screens/signup_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/commonwidget/gradientBorder.dart';
 
-class SigninScreen extends StatelessWidget {
-  const SigninScreen({super.key});
+class ChangePassScreen extends StatelessWidget {
+  const ChangePassScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class SigninScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        "SIGN IN",
+                        "Change Password",
                         style: TextStyle(
                           fontSize: 30,
                           color: context.watch<ColorProvider>().headingColor,
@@ -41,7 +42,7 @@ class SigninScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "Welcome Back! Let's pick Up Where You Left Off And Make Things Happen",
+                        "Stronger Password, Stronger You. Let's Make It Happen!",
                         style: TextStyle(
                           fontSize: 15,
                           color: context.watch<ColorProvider>().subHeadingColor,
@@ -81,60 +82,7 @@ class SigninScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text(
-                        "OR",
-                        style: TextStyle(
-                          color: context.watch<ColorProvider>().headingColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              context
-                                  .watch<ColorProvider>()
-                                  .headingColor
-                                  .withOpacity(0.8),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Center(
-                  child: GoogleButton(screenWidth: screenWidth),
-                ),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignUpScreen()),
-                      );
-                    },
-                    child: Text(
-                      'Don\'t have an account? Create One',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: context.watch<ColorProvider>().subHeadingColor,
-                        fontWeight: FontWeight.w300,
-                        fontFamily: 'LexendDeca',
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
@@ -177,47 +125,9 @@ class _AuthFormState extends State<AuthForm> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: TextFormField(
-                decoration: InputDecoration(
-                  hintText: 'Enter Email',
-                  hintStyle: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 16,
-                    fontFamily: 'LexendDeca',
-                  ),
-                  border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  suffixIcon: const Icon(
-                    Broken.message_2,
-                    color: Colors.white,
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          ),
-        ),
-
-        // ==================== PASSWORD FIELD ===============================
-
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: containerGardient,
-            border: GradientBoxBorder(
-              gradient: containerBorderGardient,
-              width: 1.5,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: TextFormField(
                 obscureText: _obscureText,
                 decoration: InputDecoration(
-                  hintText: 'Enter Password',
+                  hintText: 'New Password',
                   hintStyle: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 16,
@@ -254,24 +164,59 @@ class _AuthFormState extends State<AuthForm> {
             ),
           ),
         ),
+        // ==================== PASSWORD FIELD ===============================
 
-        // <==================== FORGOT PASSWORD  ===============================>
-
-        TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EmailVerify()),
-            );
-          },
-          child: Text(
-            'Forgot Password?',
-            style: TextStyle(
-              fontSize: 15,
-              color: context.watch<ColorProvider>().subHeadingColor,
-              fontWeight: FontWeight.w300,
-              fontFamily: 'LexendDeca',
-              letterSpacing: 1,
+        const SizedBox(height: 16),
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: containerGardient,
+            border: GradientBoxBorder(
+              gradient: containerBorderGardient,
+              width: 1.5,
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: TextFormField(
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  hintText: 'Confirm Password',
+                  hintStyle: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 16,
+                    fontFamily: 'LexendDeca',
+                  ),
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  suffixIcon: IconButton(
+                    icon: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder:
+                          (Widget child, Animation<double> animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                      child: Icon(
+                        _obscureText ? Broken.eye_slash : Broken.eye,
+                        key: ValueKey<bool>(_obscureText),
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
           ),
         ),
@@ -309,7 +254,7 @@ class AuthButton extends StatelessWidget {
               // onPressed functionality here
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MainScreen()),
+                MaterialPageRoute(builder: (context) => SigninScreen()),
               );
             },
             style: TextButton.styleFrom(
@@ -321,7 +266,7 @@ class AuthButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Continue",
+                  "Change Password",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -334,63 +279,6 @@ class AuthButton extends StatelessWidget {
                   color: Colors.white,
                   size: 20,
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// <==================== GOOGLE BUTTON ===============================>
-
-class GoogleButton extends StatelessWidget {
-  const GoogleButton({
-    super.key,
-    required this.screenWidth,
-  });
-
-  final double screenWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: screenWidth * 9,
-      height: 44,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), gradient: containerGardient),
-      child: Padding(
-        padding: const EdgeInsets.all(2.0),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border: GradientBoxBorder(
-              gradient: containerBorderGardient,
-              width: 1.5,
-            ),
-          ),
-          child: TextButton(
-            onPressed: () {
-              // onPressed functionality here
-            },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Continue With Google",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(width: 8),
               ],
             ),
           ),

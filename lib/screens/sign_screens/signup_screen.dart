@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignUpScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -21,16 +22,13 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
-             gradient: getAppGradient(context)
-            ),
+            decoration: BoxDecoration(gradient: getAppGradient(context)),
           ),
           Padding(
             padding: const EdgeInsets.all(13),
@@ -464,20 +462,83 @@ class AuthButton extends StatelessWidget {
 // <==================== GOOGLE BUTTON ===============================>
 
 class GoogleButton extends StatelessWidget {
-  const GoogleButton({
-    super.key,
-    required this.screenWidth,
-  });
+  const GoogleButton({super.key, required this.screenWidth});
 
   final double screenWidth;
+
+  Future<void> _handleGoogleSignIn(BuildContext context) async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email'],
+      );
+
+      // Forces the user to select an account
+      await googleSignIn.signOut();
+
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        SlidingSnackbar(
+          context: context,
+          message: "Google Sign-In canceled.",
+          isSuccess: false,
+        ).show();
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final Uri apiUrl =
+          Uri.parse('http://172.232.124.96:5056/api/auth/google-auth');
+
+      final response = await http.post(
+        apiUrl,
+        body: jsonEncode({
+          'email': googleUser.email,
+          'name': googleUser.displayName,
+          'photoUrl': googleUser.photoUrl,
+          'idToken': googleAuth.idToken, // Send the ID token for verification
+        }),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        SlidingSnackbar(
+          context: context,
+          message: "Google Sign-In successful!",
+          isSuccess: true,
+        ).show();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AccountCreationScreen()),
+        );
+      } else {
+        SlidingSnackbar(
+          context: context,
+          message: "Google Sign-In failed. Try again.",
+          isSuccess: false,
+        ).show();
+      }
+    } catch (error) {
+      SlidingSnackbar(
+        context: context,
+        message: "Error: $error",
+        isSuccess: false,
+      ).show();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: screenWidth * 9,
+      width: screenWidth * 0.9,
       height: 44,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), gradient: containerGardient),
+        borderRadius: BorderRadius.circular(10),
+        gradient: containerGardient,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(2.0),
         child: Container(
@@ -489,9 +550,7 @@ class GoogleButton extends StatelessWidget {
             ),
           ),
           child: TextButton(
-            onPressed: () {
-              // onPressed functionality here
-            },
+            onPressed: () => _handleGoogleSignIn(context),
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
               shape: RoundedRectangleBorder(
@@ -500,6 +559,8 @@ class GoogleButton extends StatelessWidget {
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Icon(Icons.login, color: Colors.white),
+                SizedBox(width: 8),
                 Text(
                   "Continue With Google",
                   style: TextStyle(
@@ -508,7 +569,6 @@ class GoogleButton extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(width: 8),
               ],
             ),
           ),
