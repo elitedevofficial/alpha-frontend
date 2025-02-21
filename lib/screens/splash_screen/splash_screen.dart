@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/screens/onboarding_screen/onboarding_screen.dart';
+import 'package:myapp/screens/main_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,9 +27,22 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(seconds: 3),
     )..forward();
 
+    _navigateToNextScreen();
+  }
+
+  Future<void> _navigateToNextScreen() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
     Timer(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const OnboardingScreen()));
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) =>
+                isLoggedIn ? const MainScreen() : const OnboardingScreen(),
+          ),
+        );
+      }
     });
   }
 
@@ -39,16 +54,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    
-    
-
     return Scaffold(
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
-            gradient: getAppGradient(context)
-            ),
+            decoration: BoxDecoration(gradient: getAppGradient(context)),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -41,7 +41,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
 
     try {
       final response = await http.get(Uri.parse(
-          'http://172.232.124.96:5056/api/user/artists?genre=$genre'));
+          'http://172.232.124.96:5056/api/music/artists?genre=$genre'));
 
       // Accept both 200 and 201 as valid responses
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -128,12 +128,13 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 
+  bool isSendingOtp = false; // Add this at the top of _ArtistScreenState
+
   void handleContinue() async {
     final userDataProvider =
         Provider.of<UserDataProvider>(context, listen: false);
     final selectedArtists = userDataProvider.selectedArtists;
     final email = userDataProvider.email; // Get email from UserDataProvider
-    print(selectedArtists);
 
     if (selectedArtists.length < 3) {
       SlidingSnackbar(
@@ -144,7 +145,9 @@ class _ArtistScreenState extends State<ArtistScreen> {
       return;
     }
 
-    userDataProvider.setSelectedArtists(selectedArtists);
+    setState(() {
+      isSendingOtp = true; // Start loading
+    });
 
     try {
       final response = await http.post(
@@ -173,6 +176,10 @@ class _ArtistScreenState extends State<ArtistScreen> {
         message: "An error occurred. Please check your connection.",
         isSuccess: false,
       ).show();
+    } finally {
+      setState(() {
+        isSendingOtp = false; // Stop loading
+      });
     }
   }
 
@@ -181,129 +188,39 @@ class _ArtistScreenState extends State<ArtistScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
       children: [
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Select your artist",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: context.watch<ColorProvider>().headingColor,
-              ),
-            ),
-            const Spacer(),
-            GestureDetector(
-              onTap: showLanguagePopup,
-              child: Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  gradient: containerGardient,
-                  borderRadius: BorderRadius.circular(10),
-                  border: GradientBoxBorder(
-                    gradient: containerBorderGardient,
-                    width: 1,
+            Row(
+              children: [
+                Text(
+                  "Select your artist",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: context.watch<ColorProvider>().headingColor,
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Center(
-                    child: Text(
-                      selectedLanguage,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
+                const Spacer(),
+                GestureDetector(
+                  onTap: showLanguagePopup,
+                  child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: containerGardient,
+                      borderRadius: BorderRadius.circular(10),
+                      border: GradientBoxBorder(
+                        gradient: containerBorderGardient,
+                        width: 1,
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: Container(
-            width: screenWidth * .95,
-            height: screenHeight * 0.65,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: isLoading
-                ? Center(
-                    child:
-                        CircularProgressIndicator()) // Show loading indicator
-                : artists.isNotEmpty
-                    ? GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 10.0,
-                          mainAxisSpacing: 10.0,
-                          childAspectRatio: 0.8,
-                        ),
-                        itemCount: artists.length,
-                        itemBuilder: (context, index) {
-                          final artist = artists[index];
-                          final artistName = artist["name"];
-                          final isSelected = context
-                              .watch<UserDataProvider>()
-                              .selectedArtists
-                              .contains(artistName);
-                          return GestureDetector(
-                            onTap: () => context
-                                .read<UserDataProvider>()
-                                .toggleArtistSelection(artistName),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: isSelected
-                                    ? activeContainerGardient
-                                    : containerGardient,
-                                borderRadius: BorderRadius.circular(10),
-                                border: GradientBoxBorder(
-                                  gradient: activeContainerBorderGardient,
-                                  width: 1,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        topRight: Radius.circular(10),
-                                      ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(artist["image"]),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Center(
-                                    child: Text(
-                                      artistName,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      )
-                    : Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Center(
                         child: Text(
-                          "No artists found for $selectedLanguage",
+                          selectedLanguage,
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -311,19 +228,99 @@ class _ArtistScreenState extends State<ArtistScreen> {
                           ),
                         ),
                       ),
-          ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: Container(
+                width: screenWidth * .95,
+                height: screenHeight * 0.65,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : artists.isNotEmpty
+                        ? GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10.0,
+                              mainAxisSpacing: 10.0,
+                              childAspectRatio: 0.8,
+                            ),
+                            itemCount: artists.length,
+                            itemBuilder: (context, index) {
+                              final artist = artists[index];
+                              final artistName = artist["name"];
+                              final isSelected = context
+                                  .watch<UserDataProvider>()
+                                  .selectedArtists
+                                  .contains(artistName);
+
+                              return GestureDetector(
+                                onTap: () => context
+                                    .read<UserDataProvider>()
+                                    .toggleArtistSelection(artistName),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: isSelected
+                                        ? activeContainerGardient
+                                        : containerGardient,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: GradientBoxBorder(
+                                      gradient: activeContainerBorderGardient,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Image.network(artist["image"],
+                                          height: 100, fit: BoxFit.cover),
+                                      const SizedBox(height: 10),
+                                      Text(artistName,
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14)),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : const Center(child: Text("No artists found")),
+              ),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: AccountCreationButton(
+                text: "Continue",
+                onPressed: handleContinue,
+                buttonGradient: buttonGardient,
+                borderGradient: buttonBorderGardient,
+                icon: Broken.arrow_right_2,
+              ),
+            ),
+          ],
         ),
-        const Spacer(),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 15),
-          child: AccountCreationButton(
-            text: "Continue",
-            onPressed: handleContinue,
-            buttonGradient: buttonGardient,
-            borderGradient: buttonBorderGardient,
-            icon: Broken.arrow_right_2,
+
+        // Full-Screen Loading Overlay
+        if (isSendingOtp)
+          Positioned.fill(
+            child: Container(
+              color:
+                  Colors.black.withOpacity(0.5), // Semi-transparent background
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white, // Adjust color as needed
+                ),
+              ),
+            ),
           ),
-        ),
       ],
     );
   }

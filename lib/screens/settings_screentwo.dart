@@ -3,7 +3,6 @@ import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/gradient_provider.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
 import 'package:myapp/screens/settings_screens/text_etting.dart';
-import 'package:myapp/screens/settings_screens/theme_settings_screen.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreentwo extends StatelessWidget {

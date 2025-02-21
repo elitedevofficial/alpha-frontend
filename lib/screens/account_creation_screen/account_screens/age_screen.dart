@@ -218,13 +218,6 @@ class _AgeSelectorScreenState extends State<AgeSelectorScreen> {
       setState(() {
         errorMessage = null;
       });
-      _showSnackbar(
-        context: context,
-        message: "Age validated successfully!",
-        isSuccess: true,
-      );
-
-      // Access UserDataProvider and update both age and birthdate
       var userDataProvider =
           Provider.of<UserDataProvider>(context, listen: false);
       userDataProvider.setAge(age); // Set the age in the provider

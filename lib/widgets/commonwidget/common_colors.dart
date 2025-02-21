@@ -5,13 +5,12 @@ import 'package:provider/provider.dart';
 RadialGradient getAppGradient(
   BuildContext context,
 ) {
-  final gradientColors =
-      Provider.of<GradientProvider>(context).colors;
+  final gradientColors = Provider.of<GradientProvider>(context).colors;
   return RadialGradient(
-      center: Alignment(0, -0.6), 
+      center: const Alignment(0, -0.6),
       radius: 1.2,
       colors: gradientColors,
-      stops: [0.1, 0.4, 1]);
+      stops: const [0.1, 0.4, 1]);
 }
 
 // _________________CONTAINER GRADIENT_________________________
@@ -81,3 +80,10 @@ LinearGradient activeContainerBorderGardient = LinearGradient(
   begin: Alignment.topCenter,
   end: Alignment.bottomCenter,
 );
+
+// SOLID COLORS
+const snowWhite = Color(0xFFFFFAFA);
+const tharBlack = Color.fromARGB(255, 24, 24, 24);
+const dangerRed = Color(0xFFbb2124);
+const switchColorDisabled = Color(0xFF101435);
+const switchColorEnabled = Color.fromARGB(45, 98, 121, 251);
