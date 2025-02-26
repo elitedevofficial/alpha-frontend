@@ -431,15 +431,16 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     List<Color> appliedColors = gradientProvider.colors;
 
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: getAppGradient(context),
-              ),
+       extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: getAppGradient(context),
             ),
-            Padding(
+          ),
+          SafeArea(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -469,9 +470,9 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                   ],
                 ),
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

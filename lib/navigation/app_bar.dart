@@ -24,8 +24,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final gradientProvider = Provider.of<GradientProvider>(context);
     return AppBar(
+      
       automaticallyImplyLeading: false,
-      backgroundColor: gradientProvider.secondaryColor,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      // backgroundColor: gradientProvider.secondaryColor,
       flexibleSpace: Padding(
         padding: const EdgeInsets.only(top: 25, left: 10, right: 10),
         child: Row(
@@ -80,5 +83,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(40);
 }
