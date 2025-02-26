@@ -15,15 +15,16 @@ class SettingsScreen extends StatelessWidget {
     final multiLanguageProvider =
         Provider.of<MultiLanguageProvider>(context, listen: false);
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                gradient: getAppGradient(context),
-              ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: getAppGradient(context),
             ),
-            Padding(
+          ),
+          SafeArea(
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -31,26 +32,26 @@ class SettingsScreen extends StatelessWidget {
                   SettingsTileWidget(
                     settingsTap: () =>
                         onNavigateToSubScreen("settings_customization"),
-                   /* settingsTitle:  Translations.texts[multiLanguageProvider
+                    /* settingsTitle:  Translations.texts[multiLanguageProvider
                                             .locale.languageCode]?['confirm'] ??
                                         'Confirm',*/
-                   settingsTitle: 'Customization',
+                    settingsTitle: 'Customization',
                     settingsSubtitle: 'Customize your app, theme, and more',
                     settingsIcon: Broken.edit,
                   ),
                   const SizedBox(height: 18),
                   SettingsTileWidget(
                     settingsTap: () =>
-                        onNavigateToSubScreen("settings_advanced"),
+                        onNavigateToSubScreen("recent_listened"),
                     settingsTitle: 'Advanced',
                     settingsSubtitle: 'Advanced Settings',
                     settingsIcon: Broken.edit,
                   ),
                 ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

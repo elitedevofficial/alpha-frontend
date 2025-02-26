@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/core/icon_fonts/broken_icons.dart';
 import 'package:myapp/providers/textcolor_provider.dart';
-import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/screens/forget_pass_screen/change_pass_screen.dart';
+import 'package:myapp/screens/sign_screens/signup_screen.dart';
 import 'package:myapp/widgets/commonwidget/common_colors.dart';
-import 'package:myapp/widgets/commonwidget/gradientBorder.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class ForgetOtpScreen extends StatefulWidget {
-  final VoidCallback onContinue;
-
-  const ForgetOtpScreen({required this.onContinue, super.key});
+  const ForgetOtpScreen({super.key});
 
   @override
   State<ForgetOtpScreen> createState() => _ForgetOtpScreenState();
@@ -35,114 +29,52 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
     super.dispose();
   }
 
-  // Function to handle OTP verification and API call
-  Future<void> handleOnContinue() async {
-    // Retrieve OTP from controllers
-    String otp = _controllers.map((controller) => controller.text).join();
-
-    final userDataProvider =
-        Provider.of<UserDataProvider>(context, listen: false);
-
-    // Validate OTP length
-    if (otp.length == 4) {
-      try {
-        final userData = userDataProvider.getUserData();
-
-        // Extract fields from userData
-        final username = userData['username'];
-        final password = userData['password'];
-        final email = userData['email'];
-        final dob = userData['dob']; // Can remain null
-        final profileImage = userData['profile_image']; // Can remain null
-        final favLang = userData['selectedLanguages']; // Can remain null
-        final ipAddress = userData['ipAddress']; // Can remain null
-
-        // Prepare the request body
-        final requestBody = {
-          'username': username,
-          'password': password,
-          'email': email,
-          'dob': dob, // Can remain null
-          'profile_image': profileImage, // Can remain null
-          'fav_lang': favLang, // Can remain null
-          'fav_artists': userDataProvider.selectedArtists,
-          'ipAddress': ipAddress, // Can remain null
-          'otp': otp, // Include OTP here
-        };
-
-        final response = await http.post(
-          Uri.parse('http://172.232.124.96:5056/api/auth/signup'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode(requestBody),
-        );
-
-        if (response.statusCode == 201) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Email Verify Success")),
-          );
-
-          // Navigate or call the onContinue callback
-          widget.onContinue();
-        } else {
-          // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Failed to Verify Email")),
-          );
-        }
-      } catch (error) {
-        // Handle any error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("An error occurred: $error")),
-        );
-      }
-    } else {
-      // Show validation message if OTP is not valid
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter a valid 4-digit OTP')),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
     List<FocusNode> focusNodes = List.generate(4, (_) => FocusNode());
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "Enter Your OTP",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: context.watch<ColorProvider>().headingColor,
+    return Scaffold(
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(gradient: getAppGradient(context)),
           ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: Column(
-            children: [
-              Container(
-                width: screenWidth * 0.9,
-                height: screenHeight * 0.3,
-                decoration: BoxDecoration(
-                  gradient: containerGardient,
-                  border: GradientBoxBorder(
-                    gradient: containerBorderGardient,
-                    width: 1.5,
-                  ),
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
+          Padding(
+            padding: const EdgeInsets.all(13),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            "Email Verification",
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: snowWhite,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'LexendDeca',
+                            ),
+                          ),
+                          Text(
+                            "Enter the OTP sent to your email",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: snowWhite,
+                              fontWeight: FontWeight.w300,
+                              fontFamily: 'LexendDeca',
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: List.generate(4, (index) {
@@ -158,7 +90,7 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                             ),
                             keyboardType: TextInputType.number,
                             maxLength: 1,
-                            controller: _controllers[index],
+                            // controller: _controllers[index],
                             decoration: InputDecoration(
                               counterText: "",
                               enabledBorder: OutlineInputBorder(
@@ -189,10 +121,26 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                         );
                       }),
                     ),
-                    const SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 5, right: 5),
-                      child: Container(
+                    Center(
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          'If you didn\'t receive the OTP, resend',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: snowWhite,
+                            fontWeight: FontWeight.w300,
+                            fontFamily: 'LexendDeca',
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                     const SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        width: screenWidth * 9,
                         height: 44,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
@@ -210,9 +158,10 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ChangePassScreen()),
+                                      builder: (context) =>
+                                          const ForgotChangePass()),
                                 );
-                              }, // Use the handleOnContinue function
+                              },
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 shape: RoundedRectangleBorder(
@@ -222,7 +171,7 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Verify OTP",
+                                    "Continue",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
@@ -231,7 +180,7 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                                   ),
                                   SizedBox(width: 8),
                                   Icon(
-                                    Broken.arrow_right_2,
+                                    Icons.arrow_forward,
                                     color: Colors.white,
                                     size: 20,
                                   ),
@@ -241,14 +190,86 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                           ),
                         ),
                       ),
-                    ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.transparent,
+                                    context
+                                        .watch<ColorProvider>()
+                                        .headingColor
+                                        .withOpacity(0.8), // Middle
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text(
+                              "OR",
+                              style: TextStyle(
+                                color:
+                                    context.watch<ColorProvider>().headingColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    context
+                                        .watch<ColorProvider>()
+                                        .headingColor
+                                        .withOpacity(0.8),
+                                    Colors.transparent,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpScreen()),
+                            );
+                          },
+                          child: const Text(
+                            'Don\'t have an account? Create One',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: snowWhite,
+                              fontWeight: FontWeight.w300,
+                              fontFamily: 'LexendDeca',
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

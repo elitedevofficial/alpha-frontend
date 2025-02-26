@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:myapp/providers/homecatagory_provider.dart';
 import 'package:myapp/providers/slide_gesture_provider.dart';
 import 'package:myapp/providers/userdata_provider.dart';
 import 'package:myapp/providers/gradient_provider.dart';
@@ -25,6 +26,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ColorProvider()..loadColors()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => SlideGestureProvider()),
+         ChangeNotifierProvider(
+      create: (context) => CategoryProvider(),),
         ChangeNotifierProvider(
             create: (_) => multiLanguageProvider), // Add MultiLanguageProvider
       ],
